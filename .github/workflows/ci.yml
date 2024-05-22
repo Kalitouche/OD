@@ -24,11 +24,18 @@ jobs:
     - name: Install PostgreSQL
       run: sudo apt-get install -y postgresql postgresql-contrib
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3-dev libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev build-essential
-        pip install -r requirements.txt
+        sudo apt-get install -y build-essential wget git python3-pip python3-dev python3-wheel \
+        libfreetype6-dev libxml2-dev libzip-dev libsasl2-dev python3-setuptools libjpeg-dev \
+        zlib1g-dev libpq-dev libxslt1-dev libldap2-dev libtiff5-dev libopenjp2-7-dev postgresql \
+        xfonts-75dpi gdebi node-less libffi-dev npm
+        sudo ln -s /usr/bin/nodejs /usr/bin/node
+        sudo npm install -g less less-plugin-clean-css rtlcss
+
+    - name: Install Python dependencies
+      run: pip install -r requirements.txt
 
     - name: Install Odoo
       run: |
@@ -53,4 +60,3 @@ jobs:
     - name: Run tests
       run: |
         odoo/odoo-bin -c /etc/odoo/odoo.conf -d theodooguys --test-enable --stop-after-init -u real_estate_ads
-
