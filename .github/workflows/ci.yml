@@ -61,4 +61,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
