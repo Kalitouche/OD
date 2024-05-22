@@ -12,59 +12,40 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:13
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+          POSTGRES_DB: theodooguys
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Cache Docker layers
+      uses: actions/cache@v2
       with:
-        python-version: '3.8'
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
-    - name: Install PostgreSQL
-      run: sudo apt-get install -y postgresql postgresql-contrib
+    - name: Build Docker image
+      run: docker build . --tag custom-odoo
 
-    - name: Install system dependencies
+    - name: Run Odoo tests
       run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential wget git python3-pip python3-dev python3-wheel \
-        libfreetype6-dev libxml2-dev libzip-dev libsasl2-dev python3-setuptools libjpeg-dev \
-        zlib1g-dev libpq-dev libxslt1-dev libldap2-dev libtiff5-dev libopenjp2-7-dev postgresql \
-        xfonts-75dpi gdebi node-less libffi-dev npm
-        if [ ! -e /usr/bin/node ]; then sudo ln -s /usr/bin/nodejs /usr/bin/node; fi
-        sudo npm install -g less less-plugin-clean-css rtlcss
-
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip
-
-    - name: Install setuptools==58.0.4
-      run: pip install setuptools==58.0.4
-
-    - name: Install Python dependencies
-      run: pip install -r requirements.txt
-
-    - name: Install Odoo
-      run: |
-        wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
-        tar -tf odoo_16.0.latest.tar.gz # Liste le contenu de l'archive pour vérifier qu'elle est correcte
-        tar -xf odoo_16.0.latest.tar.gz
-        ls # Liste le contenu du répertoire actuel pour vérifier l'extraction
-        mv odoo-* odoo # Utilise une wildcard pour capturer le répertoire extrait quelle que soit la version exacte
-        pip install -r odoo/requirements.txt
-
-    - name: Configure Odoo
-      run: |
-        cp odoo/debian/odoo.conf /etc/odoo/odoo.conf
-        echo "addons_path = /home/runner/work/${{ github.repository }}/addons,/home/runner/work/${{ github.repository }}/custom-addons" >> /etc/odoo/odoo.conf
-        echo "db_user = odoo" >> /etc/odoo/odoo.conf
-        echo "db_password = odoo" >> /etc/odoo/odoo.conf
-
-    - name: Create Odoo database
-      run: |
-        sudo -u postgres createuser -s odoo
-        sudo -u postgres createdb theodooguys
-        sudo -u postgres psql -c "ALTER USER odoo WITH PASSWORD 'odoo';"
-
-    - name: Run tests
-      run: |
-        odoo/odoo-bin -c /etc/odoo/odoo.conf -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        docker run --rm --link theodooguys_postgres_1:db -v $GITHUB_WORKSPACE/.odoorc:/etc/odoo/odoorc -v $GITHUB_WORKSPACE:/mnt/extra-addons custom-odoo \
+          odoo/odoo-bin -c /etc/odoo/odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
