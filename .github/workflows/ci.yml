@@ -46,8 +46,10 @@ jobs:
     - name: Install Odoo
       run: |
         wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
+        tar -tf odoo_16.0.latest.tar.gz # Liste le contenu de l'archive pour vérifier qu'elle est correcte
         tar -xf odoo_16.0.latest.tar.gz
-        mv odoo-16.0 odoo
+        ls # Liste le contenu du répertoire actuel pour vérifier l'extraction
+        mv odoo-* odoo # Utilise une wildcard pour capturer le répertoire extrait quelle que soit la version exacte
         pip install -r odoo/requirements.txt
 
     - name: Configure Odoo
