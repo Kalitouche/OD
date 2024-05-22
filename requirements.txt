@@ -32,7 +32,7 @@ reportlab
 requests
 six
 suds-community
-vatnumber
+vatnumber==1.0.0
 vobject
 Werkzeug
 XlsxWriter
