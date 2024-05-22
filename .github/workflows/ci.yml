@@ -52,11 +52,6 @@ jobs:
         mv odoo-* odoo # Utilise une wildcard pour capturer le répertoire extrait quelle que soit la version exacte
         pip install -r odoo/requirements.txt
 
-    - name: Configure Odoo
-      run: |
-        mkdir -p /etc/odoo
-        cp .odoorc /etc/odoorc
-
     - name: Create Odoo database
       run: |
         sudo -u postgres createuser -s odoo
@@ -65,4 +60,4 @@ jobs:
 
     - name: Run tests
       run: |
-        python3 odoo/odoo-bin -c /etc/odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        python3 odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
