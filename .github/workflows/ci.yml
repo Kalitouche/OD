@@ -49,18 +49,16 @@ jobs:
     - name: Install Odoo
       run: |
         wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
-        tar -tf odoo_16.0.latest.tar.gz # Liste le contenu de l'archive pour vérifier qu'elle est correcte
         tar -xf odoo_16.0.latest.tar.gz
-        ls # Liste le contenu du répertoire actuel pour vérifier l'extraction
-        mv odoo-* odoo # Utilise une wildcard pour capturer le répertoire extrait quelle que soit la version exacte
+        mv odoo-16.0* odoo
         pip install -r odoo/requirements.txt
 
-    - name: Create Odoo database
+    - name: Create PostgreSQL user and database
       run: |
         sudo -u postgres createuser -s odoo
-        sudo -u postgres createdb theodooguys
+        sudo -u postgres createdb -O odoo theodooguys
         sudo -u postgres psql -c "ALTER USER odoo WITH PASSWORD 'odoo';"
 
     - name: Run tests
       run: |
-        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        python3 odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
