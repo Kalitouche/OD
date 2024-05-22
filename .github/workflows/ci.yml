@@ -31,21 +31,28 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
-    - name: Cache Docker layers
-      uses: actions/cache@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
-        restore-keys: |
-          ${{ runner.os }}-buildx-
+        python-version: '3.8'
 
-    - name: Build Docker image
-      run: docker build . --tag custom-odoo
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential libxml2-dev libxslt1-dev libevent-dev libsasl2-dev libldap2-dev libssl-dev libz-dev
+        sudo apt-get install -y python3-pip
+        pip3 install -r requirements.txt
+
+    - name: Download and extract Odoo
+      run: |
+        wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
+        tar -xzf odoo_16.0.latest.tar.gz
+        mv odoo-16.0 odoo
+
+    - name: Configure Odoo
+      run: |
+        cp .odoorc /etc/odoorc
 
     - name: Run Odoo tests
       run: |
-        docker run --rm --link theodooguys_postgres_1:db -v $GITHUB_WORKSPACE/.odoorc:/etc/odoo/odoorc -v $GITHUB_WORKSPACE:/mnt/extra-addons custom-odoo \
-          odoo/odoo-bin -c /etc/odoo/odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        python3 odoo/odoo-bin -c /etc/odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
