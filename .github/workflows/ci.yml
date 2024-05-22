@@ -1,1 +1,56 @@
+name: Odoo Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install PostgreSQL
+      run: sudo apt-get install -y postgresql postgresql-contrib
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-dev libxml2-dev libxslt1-dev zlib1g-dev libsasl2-dev libldap2-dev build-essential
+        pip install -r requirements.txt
+
+    - name: Install Odoo
+      run: |
+        wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
+        tar -xf odoo_16.0.latest.tar.gz
+        mv odoo-16.0 odoo
+        pip install -r odoo/requirements.txt
+
+    - name: Configure Odoo
+      run: |
+        cp odoo/debian/odoo.conf /etc/odoo/odoo.conf
+        echo "addons_path = /home/runner/work/${{ github.repository }}/addons,/home/runner/work/${{ github.repository }}/custom-addons" >> /etc/odoo/odoo.conf
+        echo "db_user = odoo" >> /etc/odoo/odoo.conf
+        echo "db_password = odoo" >> /etc/odoo/odoo.conf
+
+    - name: Create Odoo database
+      run: |
+        sudo -u postgres createuser -s odoo
+        sudo -u postgres createdb theodooguys
+        sudo -u postgres psql -c "ALTER USER odoo WITH PASSWORD 'odoo';"
+
+    - name: Run tests
+      run: |
+        odoo/odoo-bin -c /etc/odoo/odoo.conf -d theodooguys --test-enable --stop-after-init -u real_estate_ads
 
