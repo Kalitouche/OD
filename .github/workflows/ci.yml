@@ -60,9 +60,13 @@ jobs:
         sudo -u postgres psql -c "CREATE USER odoo WITH SUPERUSER PASSWORD 'odoo';"
         sudo -u postgres createdb -O odoo theodooguys
 
-    - name: Run tests in the 'tests' directory
+    - name: Initialize database
+      run: |
+        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys -i base
+
+    - name: Run tests for the 'real_estate_ads' module
       env:
         PGUSER: odoo
         PGPASSWORD: odoo
       run: |
-        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init --test-tags /custom-addons/real_estate_ads/tests
+        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init --test-tags V16.0/custom-addons/real_estate_ads/tests
