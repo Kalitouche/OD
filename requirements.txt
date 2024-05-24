@@ -40,3 +40,4 @@ xlwt
 xlrd
 polib
 libsass
+websocket-client
