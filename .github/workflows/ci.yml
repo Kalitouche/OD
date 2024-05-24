@@ -33,7 +33,7 @@ jobs:
         sudo apt-get install -y build-essential wget git python3-pip python3-dev python3-wheel \
         libfreetype6-dev libxml2-dev libzip-dev libsasl2-dev python3-setuptools libjpeg-dev \
         zlib1g-dev libpq-dev libxslt1-dev libldap2-dev libtiff5-dev libopenjp2-7-dev postgresql \
-        xfonts-75dpi gdebi node-less libffi-dev npm
+        xfonts-75dpi gdebi node-less libffi-dev npm wkhtmltopdf
         if [ ! -e /usr/bin/node ]; then sudo ln -s /usr/bin/nodejs /usr/bin/node; fi
         sudo npm install -g less less-plugin-clean-css rtlcss
 
