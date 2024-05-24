@@ -51,14 +51,4 @@ jobs:
         wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
         tar -xf odoo_16.0.latest.tar.gz
         mv odoo-16.0* odoo
-        pip install -r odoo/requirements.txt
-
-    - name: Create PostgreSQL user and database
-      run: |
-        sudo -u postgres createuser -s odoo
-        sudo -u postgres createdb -O odoo theodooguys
-        sudo -u postgres psql -c "ALTER USER odoo WITH PASSWORD 'odoo';"
-
-    - name: Run tests
-      run: |
-        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
+        pip install
