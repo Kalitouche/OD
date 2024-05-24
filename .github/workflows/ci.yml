@@ -57,10 +57,12 @@ jobs:
 
     - name: Create PostgreSQL user and database
       run: |
-        sudo -u postgres createuser -s odoo
+        sudo -u postgres psql -c "CREATE USER odoo WITH SUPERUSER PASSWORD 'odoo';"
         sudo -u postgres createdb -O odoo theodooguys
-        sudo -u postgres psql -c "ALTER USER odoo WITH PASSWORD 'odoo';"
 
     - name: Run tests
+      env:
+        PGUSER: odoo
+        PGPASSWORD: odoo
       run: |
         python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys --test-enable --stop-after-init -u real_estate_ads
