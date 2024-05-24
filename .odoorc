@@ -1,6 +1,6 @@
 [options]
 admin_passwd = $pbkdf2-sha512$600000$BsAYA8DYW2ut9f7f2xvjfA$vMD1mHH7HaxI7Aw9c9BgjwJLsQidxEkC/7PmGnlpHQrLaoqP6UnMdav.T6pLVfsJVJPMnnHFT7AGoUCjFQJk4A
-addons_path = /home/runner/work/OD/OD/V16.0/odoo/addons,/home/runner/work/OD/OD/V16.0/custom-addons
+addons_path = /home/runner/work/OD/OD/V16.0/odoo/addons,/home/runner/work/OD/OD/V16.0/custom-addons,/home/runner/work/OD/V16.0/custom-addons/real_estate_ads/tests
 db_host = localhost
 db_port = 5432
 db_user = odoo
