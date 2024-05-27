@@ -61,7 +61,7 @@ jobs:
         sudo -u postgres createdb -O odoo theodooguys
     - name: Initialize database
       run: |
-        python3 odoo/odoo-bin -c .odoorc -d theodooguys -i base
+        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys -i base
     - name: Run tests for the 'real_estate_ads' module
       env:
         PGUSER: odoo
