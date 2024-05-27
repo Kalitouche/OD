@@ -52,17 +52,17 @@ jobs:
       run: |
         wget https://nightly.odoo.com/16.0/nightly/src/odoo_16.0.latest.tar.gz
         tar -xf odoo_16.0.latest.tar.gz
-        mv odoo-16.0* odoo
-        pip install -r odoo/requirements.txt
+        mv odoo-16.0* V16.0/odoo
+        pip install -r V16.0/odoo/requirements.txt
 
     - name: Create PostgreSQL user and database
       run: |
         sudo -u postgres psql -c "CREATE USER odoo WITH SUPERUSER PASSWORD 'odoo';"
         sudo -u postgres createdb -O odoo theodooguys
 
-    - name: Run tests for the 'real_estate_ads' module
+    - name: Initialize database and run tests
       env:
         PGUSER: odoo
         PGPASSWORD: odoo
       run: |
-        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys -i base,real_estate_ads --test-enable --stop-after-init --test-tags V16.0/custom-addons/real_estate_ads/tests
+        python3 V16.0/odoo/odoo-bin -c .odoorc -d theodooguys -i base,real_estate_ads --test-enable --stop-after-init --test-tags real_estate_ads
